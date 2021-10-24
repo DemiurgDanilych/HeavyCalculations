@@ -5,37 +5,21 @@ import java.net.Socket;
 public class Server {
 	private static final int PORT = 55555;
 	
-	private static Socket clientSocket;
-	private static ServerSocket server;
-	private static BufferedReader in;
-	private static BufferedWriter out;
-	
 	public static void main(String[] args) {
-		try {
-			try {
-				server = new ServerSocket(PORT);
-				System.out.println("Сервер запущен !");
-				clientSocket = server.accept();
-				
-				try {
-					in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-					out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-					String resultFib = calculation(in.readLine());
-					out.write("Результат - " + resultFib + "\n");
-					out.flush();
-					System.out.println("Ответ отправлен!");
-				} finally {
-					clientSocket.close();
-					in.close();
-					out.close();
-				}
-				
-			}finally{
-				System.out.println("Сервер закрыт ...");
-				server.close();
-			}
+		
+		try (ServerSocket server = new ServerSocket(PORT);
+			 Socket clientSocket = server.accept();
+			 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))
+			 ) {
+			
+			String resultFib = calculation(in.readLine());
+			out.write("Результат - " + resultFib + "\n");
+			out.flush();
+			System.out.println("Ответ отправлен!");
+			
 		} catch (IOException e) {
-			System.out.println(e);
+			System.out.println(e.getMessage());
 		}
 	}
 	
